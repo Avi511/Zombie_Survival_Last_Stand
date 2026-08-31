@@ -25,11 +25,6 @@ public class Bullet : MonoBehaviour
 
             Destroy(gameObject);
         }
-        else if (objectWeHit.gameObject.CompareTag("Wall"))
-        {
-            print("hit a wall");
-            Destroy(gameObject);
-        }
         else
         {
             // Destroy on any other solid collision
