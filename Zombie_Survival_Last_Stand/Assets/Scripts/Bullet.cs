@@ -4,45 +4,36 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [Header("Hit Settings")]
-    [Tooltip("Damage dealt upon impact.")]
-    public float damage = 25f;
-    [Tooltip("Whether the bullet destroys itself when hitting any obstacle or target.")]
-    public bool destroyOnAnyHit = true;
-
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision objectWeHit)
     {
-        HandleHit(collision.gameObject);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        HandleHit(other.gameObject);
-    }
-
-    private void HandleHit(GameObject hitObject)
-    {
-        // Don't collide with the player who shot it or other bullets
-        if (hitObject.CompareTag("Player") || hitObject.GetComponent<Bullet>() != null)
+        // Don't collide with the player who fired
+        if (objectWeHit.gameObject.CompareTag("Player"))
         {
             return;
         }
 
-        Debug.Log("Bullet hit: " + hitObject.name);
-
-        // Check if the object hit is an Enemy, Target, or named Target/Enemy
-        string objNameLower = hitObject.name.ToLower();
-        if (hitObject.CompareTag("Enemy") || hitObject.CompareTag("Target") || objNameLower.Contains("target") || objNameLower.Contains("enemy"))
+        if (objectWeHit.gameObject.CompareTag("Target"))
         {
-            Debug.Log("Destroyed: " + hitObject.name);
-            Destroy(hitObject);
+            print("hit " + objectWeHit.gameObject.name + " !");
+
+            // Apply impact force to the target Rigidbody to knock it down
+            Rigidbody targetRb = objectWeHit.gameObject.GetComponent<Rigidbody>();
+            if (targetRb != null)
+            {
+                targetRb.AddForce(transform.forward * 10f, ForceMode.Impulse);
+            }
+
+            Destroy(gameObject);
         }
-
-        // Destroy the bullet upon hitting anything solid
-        if (destroyOnAnyHit)
+        else if (objectWeHit.gameObject.CompareTag("Wall"))
         {
+            print("hit a wall");
+            Destroy(gameObject);
+        }
+        else
+        {
+            // Destroy on any other solid collision
             Destroy(gameObject);
         }
     }
 }
-

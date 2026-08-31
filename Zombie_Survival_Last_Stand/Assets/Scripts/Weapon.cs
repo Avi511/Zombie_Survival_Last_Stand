@@ -4,134 +4,222 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
+    [Header("Camera Reference")]
+    public Camera playerCamera;
+
+    [Header("Shooting State")]
+    public bool isShooting;
+    public bool readyToShoot;
+    bool allowReset = true;
+    public float shootingDelay = 0.2f;
+
+    [Header("Burst Settings")]
+    public int bulletsPerBurst = 3;
+    public int burstBulletsLeft;
+
+    [Header("Spread Settings")]
+    [Tooltip("Set to 0 for 100% pinpoint accuracy into crosshair")]
+    public float spreadIntensity = 0f;
+
     [Header("Bullet Settings")]
-    [Tooltip("The bullet prefab to shoot. If left empty, a default bullet will be generated automatically.")]
     public GameObject bulletPrefab;
-    [Tooltip("The point from which bullets spawn. If left empty, the weapon's transform is used.")]
     public Transform bulletSpawn;
-    [Tooltip("Speed of the bullet.")]
-    public float bulletVelocity = 50f;
-    [Tooltip("Lifetime of the bullet before being destroyed.")]
+    public float bulletVelocity = 100f;
     public float bulletPrefabLifetime = 3f;
 
-    [Header("Firing Settings")]
-    [Tooltip("Cooldown between shots in seconds.")]
-    public float fireRate = 0.2f;
-    [Tooltip("If true, holding down the fire button will shoot continuously.")]
-    public bool isAutomatic = false;
+    public enum ShootingMode
+    {
+        Single,
+        Burst,
+        Auto
+    }
 
-    [Header("Aiming")]
-    [Tooltip("If true, bullets are aimed towards the center of the screen/crosshair.")]
-    public bool aimTowardsCrosshair = true;
+    [Header("Shooting Mode")]
+    public ShootingMode currentShootingMode;
 
-    private float nextTimeToFire = 0f;
+    private void Awake()
+    {
+        readyToShoot = true;
+        burstBulletsLeft = bulletsPerBurst;
+
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+        }
+
+        if (bulletSpawn == null)
+        {
+            bulletSpawn = transform;
+        }
+    }
 
     void Update()
     {
-        // Detect fire input (Left Mouse Button, Mouse0, or Fire1 axis)
-        bool fireInput = isAutomatic 
-            ? (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Mouse0) || Input.GetButton("Fire1"))
-            : (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Mouse0) || Input.GetButtonDown("Fire1"));
-
-        if (fireInput && Time.time >= nextTimeToFire)
+        if (currentShootingMode == ShootingMode.Auto)
         {
-            nextTimeToFire = Time.time + fireRate;
+            // Holding Down Left Mouse Button
+            isShooting = Input.GetKey(KeyCode.Mouse0) || Input.GetMouseButton(0);
+        }
+        else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
+        {
+            // Clicking Left Mouse Button Once
+            isShooting = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetMouseButtonDown(0);
+        }
+
+        if (readyToShoot && isShooting)
+        {
+            burstBulletsLeft = bulletsPerBurst;
             FireWeapon();
         }
     }
 
-    public void FireWeapon()
+    private void FireWeapon()
     {
-        // Determine spawn position & rotation
-        Vector3 spawnPos = bulletSpawn != null ? bulletSpawn.position : transform.position;
-        Quaternion spawnRot = bulletSpawn != null ? bulletSpawn.rotation : transform.rotation;
+        readyToShoot = false;
 
-        // Calculate shooting direction
-        Vector3 shootDirection = bulletSpawn != null ? bulletSpawn.forward : transform.forward;
+        Vector3 shootingDirection = CalculateDirectionAndSpread().normalized;
 
-        if (aimTowardsCrosshair && Camera.main != null)
+        // Instantiate or create the bullet
+        GameObject bullet = SpawnBullet(bulletSpawn.position, Quaternion.identity);
+
+        // Point the bullet forward to face the shooting direction
+        bullet.transform.forward = shootingDirection;
+
+        // Ignore collisions between bullet and player/weapon colliders
+        Collider bulletCollider = bullet.GetComponent<Collider>();
+        if (bulletCollider != null)
         {
-            Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-            Vector3 targetPoint;
-
-            if (Physics.Raycast(ray, out RaycastHit hit, 500f))
+            Collider[] playerColliders = transform.root.GetComponentsInChildren<Collider>();
+            foreach (Collider playerCol in playerColliders)
             {
-                targetPoint = hit.point;
-            }
-            else
-            {
-                targetPoint = ray.GetPoint(500f);
-            }
-
-            shootDirection = (targetPoint - spawnPos).normalized;
-            spawnRot = Quaternion.LookRotation(shootDirection);
-        }
-
-        // Instantiate or create bullet
-        GameObject bullet;
-        if (bulletPrefab != null)
-        {
-            bullet = Instantiate(bulletPrefab, spawnPos, spawnRot);
-        }
-        else
-        {
-            // Fallback: Create a default sphere bullet if no prefab is assigned
-            bullet = CreateDefaultBullet(spawnPos, spawnRot);
-        }
-
-        // Ensure bullet has Rigidbody
-        if (!bullet.TryGetComponent<Rigidbody>(out var rb))
-        {
-            rb = bullet.AddComponent<Rigidbody>();
-        }
-
-        rb.isKinematic = false;
-        rb.useGravity = false;
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        
-        // Add impulse force in shoot direction
-        rb.AddForce(shootDirection * bulletVelocity, ForceMode.Impulse);
-
-        // Ensure bullet has the Bullet script for hit detection
-        if (!bullet.TryGetComponent<Bullet>(out _))
-        {
-            bullet.AddComponent<Bullet>();
-        }
-
-        // Ignore collision between bullet and player
-        Collider bulletCol = bullet.GetComponent<Collider>();
-        Collider[] playerCols = transform.root.GetComponentsInChildren<Collider>();
-        if (bulletCol != null)
-        {
-            foreach (var pCol in playerCols)
-            {
-                if (pCol != bulletCol)
+                if (playerCol != bulletCollider)
                 {
-                    Physics.IgnoreCollision(bulletCol, pCol, true);
+                    Physics.IgnoreCollision(bulletCollider, playerCol, true);
                 }
             }
         }
 
-        // Destroy after lifetime
+        // Apply straight velocity and force towards target
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.useGravity = false; // Fly straight to crosshair without bullet drop
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            rb.linearVelocity = Vector3.zero;
+            rb.AddForce(shootingDirection * bulletVelocity, ForceMode.Impulse);
+        }
+
+        // Destroy the bullet after lifetime
         Destroy(bullet, bulletPrefabLifetime);
+
+        // Reset shot cooldown
+        if (allowReset)
+        {
+            Invoke("ResetShot", shootingDelay);
+            allowReset = false;
+        }
+
+        // Burst Mode
+        if (currentShootingMode == ShootingMode.Burst && burstBulletsLeft > 1)
+        {
+            burstBulletsLeft--;
+            Invoke("FireWeapon", shootingDelay);
+        }
     }
 
-    private GameObject CreateDefaultBullet(Vector3 position, Quaternion rotation)
+    private GameObject SpawnBullet(Vector3 position, Quaternion rotation)
     {
-        GameObject bullet = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        bullet.name = "DefaultBullet";
-        bullet.transform.position = position;
-        bullet.transform.rotation = rotation;
-        bullet.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-
-        // Make it yellow
-        Renderer rend = bullet.GetComponent<Renderer>();
-        if (rend != null)
+        GameObject bullet;
+        if (bulletPrefab != null)
         {
-            rend.material.color = Color.yellow;
+            bullet = Instantiate(bulletPrefab, position, rotation);
+        }
+        else
+        {
+            // Safe fallback: Create a default bullet if no prefab is assigned
+            bullet = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            bullet.name = "Bullet (Default)";
+            bullet.transform.position = position;
+            bullet.transform.rotation = rotation;
+            bullet.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+
+            Renderer rend = bullet.GetComponent<Renderer>();
+            if (rend != null)
+            {
+                rend.material.color = Color.yellow;
+            }
+
+            if (!bullet.TryGetComponent<Bullet>(out _))
+            {
+                bullet.AddComponent<Bullet>();
+            }
+        }
+
+        if (!bullet.TryGetComponent<Rigidbody>(out _))
+        {
+            bullet.AddComponent<Rigidbody>();
         }
 
         return bullet;
     }
-}
 
+    private void ResetShot()
+    {
+        readyToShoot = true;
+        allowReset = true;
+    }
+
+    public Vector3 CalculateDirectionAndSpread()
+    {
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+        }
+
+        Vector3 targetPoint = Vector3.zero;
+
+        if (playerCamera != null)
+        {
+            // Raycast through center of screen/crosshair
+            Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            RaycastHit[] hits = Physics.RaycastAll(ray, 500f);
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+            bool hitFound = false;
+            foreach (RaycastHit hit in hits)
+            {
+                // Make sure raycast doesn't hit the player or gun colliders
+                if (hit.transform.root != transform.root && !hit.collider.isTrigger)
+                {
+                    targetPoint = hit.point;
+                    hitFound = true;
+                    break;
+                }
+            }
+
+            if (!hitFound)
+            {
+                targetPoint = ray.GetPoint(100f);
+            }
+        }
+        else
+        {
+            targetPoint = bulletSpawn.position + bulletSpawn.forward * 100f;
+        }
+
+        Vector3 direction = targetPoint - bulletSpawn.position;
+
+        // Apply spread relative to camera orientation (screen X and Y)
+        float x = UnityEngine.Random.Range(-spreadIntensity, spreadIntensity);
+        float y = UnityEngine.Random.Range(-spreadIntensity, spreadIntensity);
+
+        Vector3 spread = Vector3.zero;
+        if (playerCamera != null)
+        {
+            spread = playerCamera.transform.right * x + playerCamera.transform.up * y;
+        }
+
+        return direction + spread;
+    }
+}
