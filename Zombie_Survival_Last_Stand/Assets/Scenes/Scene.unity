@@ -4268,13 +4268,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f8c65404b61bb42bdf0f22e793e6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  playerCamera: {fileID: 0}
+  isShooting: 0
+  readyToShoot: 0
+  shootingDelay: 2
+  bulletsPerBurst: 3
+  burstBulletsLeft: 0
+  spreadIntensity: 0
   bulletPrefab: {fileID: 0}
   bulletSpawn: {fileID: 0}
   bulletVelocity: 30
   bulletPrefabLifetime: 3
-  fireRate: 0.2
-  isAutomatic: 0
-  aimTowardsCrosshair: 1
+  currentShootingMode: 2
 --- !u!1 &835653974
 GameObject:
   m_ObjectHideFlags: 0
@@ -4628,8 +4633,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca68c99a292389147b92078e384737bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  damage: 25
-  destroyOnAnyHit: 1
 --- !u!4 &872327770 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 442594, guid: 1a5e2f40365fe44ada271dd97ea7506f, type: 3}
