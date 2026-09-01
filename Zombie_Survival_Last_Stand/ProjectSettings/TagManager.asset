@@ -12,6 +12,7 @@ TagManager:
   - Cube_Spawn_Point_2
   - Enemy
   - Target
+  - Wall
   layers:
   - Default
   - TransparentFX
