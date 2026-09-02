@@ -7,6 +7,8 @@ public class Weapon : MonoBehaviour
     [Header("Camera Reference")]
     public Camera playerCamera;
 
+    public bool isActiveWeapon;
+
     [Header("Shooting State")]
     public bool isShooting;
     public bool readyToShoot;
@@ -27,6 +29,17 @@ public class Weapon : MonoBehaviour
     public float bulletVelocity = 100f;
     public float bulletPrefabLifetime = 3f;
 
+    public enum WeaponModel
+    {
+        M416,
+        AK74,
+        Bennelli_M4,
+        UZI,
+        M1911
+    }
+
+    public WeaponModel thisWeaponModel;
+
     public enum ShootingMode
     {
         Single,
@@ -36,6 +49,25 @@ public class Weapon : MonoBehaviour
 
     [Header("Shooting Mode")]
     public ShootingMode currentShootingMode;
+
+    [Header("Weapon Setup")]
+    public Vector3 spawnPosition;
+    public Vector3 spawnRotation;
+    public Vector3 spawnScale = Vector3.one;
+
+    public GameObject muzzleFlashEffect;
+
+    [Header("Reload")]
+    // For Loading/Reloading Purpose
+    public float reloadTime;
+    public int magazineSize;
+    public int bulletsLeft;
+
+    // Demo total ammo
+    public int totalAmmo = 100;
+
+    public bool isReloading;
+
 
     private void Awake()
     {
@@ -51,31 +83,73 @@ public class Weapon : MonoBehaviour
         {
             bulletSpawn = transform;
         }
+
+        bulletsLeft = magazineSize;
     }
+
 
     void Update()
     {
-        if (currentShootingMode == ShootingMode.Auto)
+        if (isActiveWeapon)
         {
-            // Holding Down Left Mouse Button
-            isShooting = Input.GetKey(KeyCode.Mouse0) || Input.GetMouseButton(0);
-        }
-        else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
-        {
-            // Clicking Left Mouse Button Once
-            isShooting = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetMouseButtonDown(0);
-        }
+            if (currentShootingMode == ShootingMode.Auto)
+            {
+                // Holding Down Left Mouse Button
+                isShooting = Input.GetKey(KeyCode.Mouse0) || Input.GetMouseButton(0);
+            }
+            else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
+            {
+                // Clicking Left Mouse Button Once
+                isShooting = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetMouseButtonDown(0);
+            }
 
-        if (readyToShoot && isShooting)
-        {
-            burstBulletsLeft = bulletsPerBurst;
-            FireWeapon();
+            if (readyToShoot && isShooting && !isReloading)
+            {
+                burstBulletsLeft = bulletsPerBurst;
+                FireWeapon();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R) &&
+                bulletsLeft < magazineSize &&
+                isReloading == false &&
+                totalAmmo > 0)
+            {
+                Reload();
+            }
+
+            // Automatic Reload
+            if (readyToShoot &&
+                isShooting == false &&
+                bulletsLeft <= 0 &&
+                isReloading == false &&
+                totalAmmo > 0)
+            {
+                Reload();
+            }
         }
     }
 
+
     private void FireWeapon()
     {
+        if (bulletsLeft == 0 || isReloading)
+        {
+            return;
+        }
+
+        bulletsLeft--;
+
         readyToShoot = false;
+
+        if (muzzleFlashEffect != null)
+        {
+            ParticleSystem muzzleFlash = muzzleFlashEffect.GetComponent<ParticleSystem>();
+
+            if (muzzleFlash != null)
+            {
+                muzzleFlash.Play();
+            }
+        }
 
         Vector3 shootingDirection = CalculateDirectionAndSpread().normalized;
 
@@ -87,9 +161,11 @@ public class Weapon : MonoBehaviour
 
         // Ignore collisions between bullet and player/weapon colliders
         Collider bulletCollider = bullet.GetComponent<Collider>();
+
         if (bulletCollider != null)
         {
             Collider[] playerColliders = transform.root.GetComponentsInChildren<Collider>();
+
             foreach (Collider playerCol in playerColliders)
             {
                 if (playerCol != bulletCollider)
@@ -101,10 +177,11 @@ public class Weapon : MonoBehaviour
 
         // Apply straight velocity and force towards target
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
+
         if (rb != null)
         {
             rb.isKinematic = false;
-            rb.useGravity = false; // Fly straight to crosshair without bullet drop
+            rb.useGravity = false;
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
             rb.linearVelocity = Vector3.zero;
             rb.AddForce(shootingDirection * bulletVelocity, ForceMode.Impulse);
@@ -128,9 +205,11 @@ public class Weapon : MonoBehaviour
         }
     }
 
+
     private GameObject SpawnBullet(Vector3 position, Quaternion rotation)
     {
         GameObject bullet;
+
         if (bulletPrefab != null)
         {
             bullet = Instantiate(bulletPrefab, position, rotation);
@@ -145,6 +224,7 @@ public class Weapon : MonoBehaviour
             bullet.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
 
             Renderer rend = bullet.GetComponent<Renderer>();
+
             if (rend != null)
             {
                 rend.material.color = Color.yellow;
@@ -164,11 +244,13 @@ public class Weapon : MonoBehaviour
         return bullet;
     }
 
+
     private void ResetShot()
     {
         readyToShoot = true;
         allowReset = true;
     }
+
 
     public Vector3 CalculateDirectionAndSpread()
     {
@@ -183,10 +265,13 @@ public class Weapon : MonoBehaviour
         {
             // Raycast through center of screen/crosshair
             Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+
             RaycastHit[] hits = Physics.RaycastAll(ray, 500f);
+
             System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
             bool hitFound = false;
+
             foreach (RaycastHit hit in hits)
             {
                 // Make sure raycast doesn't hit the player or gun colliders
@@ -210,16 +295,59 @@ public class Weapon : MonoBehaviour
 
         Vector3 direction = targetPoint - bulletSpawn.position;
 
-        // Apply spread relative to camera orientation (screen X and Y)
+        // Apply spread relative to camera orientation
         float x = UnityEngine.Random.Range(-spreadIntensity, spreadIntensity);
         float y = UnityEngine.Random.Range(-spreadIntensity, spreadIntensity);
 
         Vector3 spread = Vector3.zero;
+
         if (playerCamera != null)
         {
             spread = playerCamera.transform.right * x + playerCamera.transform.up * y;
         }
 
         return direction + spread;
+    }
+
+
+    private void Reload()
+    {
+        isReloading = true;
+
+        Invoke("ReloadCompleted", reloadTime);
+
+        StartCoroutine(ReloadProgress());
+    }
+
+
+    private void ReloadCompleted()
+    {
+        int bulletsNeeded = magazineSize - bulletsLeft;
+
+        // Use the available demo ammo
+        int bulletsToLoad = Mathf.Min(bulletsNeeded, totalAmmo);
+
+        bulletsLeft += bulletsToLoad;
+
+        // Remove loaded bullets from total ammo
+        totalAmmo -= bulletsToLoad;
+
+        // Reload completed
+        isReloading = false;
+    }
+
+
+    private IEnumerator ReloadProgress()
+    {
+        float timer = 0f;
+
+        while (timer < reloadTime)
+        {
+            timer = timer + Time.deltaTime;
+
+            float progress = timer / reloadTime;
+
+            yield return null;
+        }
     }
 }

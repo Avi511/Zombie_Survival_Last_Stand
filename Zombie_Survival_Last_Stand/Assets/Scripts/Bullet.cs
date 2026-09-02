@@ -16,18 +16,24 @@ public class Bullet : MonoBehaviour
         {
             print("hit " + objectWeHit.gameObject.name + " !");
 
+            CreateBulletImpactEffect(objectWeHit);
+
             // Apply impact force to the target Rigidbody to knock it down
             Rigidbody targetRb = objectWeHit.gameObject.GetComponent<Rigidbody>();
             if (targetRb != null)
             {
-                targetRb.AddForce(transform.forward * 10f, ForceMode.Impulse);
+                targetRb.AddForce(transform.forward * 15f, ForceMode.Impulse);
+                targetRb.useGravity = true;
             }
 
             Destroy(gameObject);
         }
-        else if (objectWeHit.gameObject.CompareTag("Wall"))
+        if (objectWeHit.gameObject.CompareTag("Wall"))
         {
-            print("hit a wall");
+            print("hit " + objectWeHit.gameObject.name + " !");
+
+            CreateBulletImpactEffect(objectWeHit);
+
             Destroy(gameObject);
         }
         else
@@ -35,5 +41,14 @@ public class Bullet : MonoBehaviour
             // Destroy on any other solid collision
             Destroy(gameObject);
         }
+    }
+
+    void CreateBulletImpactEffect(Collision objectWeHit)
+    {
+         ContactPoint contact = objectWeHit.contacts[0];
+
+         GameObject hole = Instantiate(GlobalReferences.Instance.bulletImpactEffectPrefab, contact.point, Quaternion.LookRotation(contact.normal));
+
+         hole.transform.SetParent(objectWeHit.gameObject.transform);
     }
 }
