@@ -57,9 +57,7 @@ public class SelectionManager : MonoBehaviour
                 //Check if player is reloading before allowing weapon pickup
                 Weapon activeWeapon = WeaponManager.Instance.activeWeaponSlot.GetComponentInChildren<Weapon>();
 
-                bool canPickup = activeWeapon == null;
-
-                if(Input.GetKeyDown(KeyCode.Q) && canPickup)
+                if(Input.GetKeyDown(KeyCode.Q))
                 {
                     WeaponManager.Instance.PickupWeapon(hoveredWeapon.gameObject);
                 }

@@ -57,6 +57,7 @@ public class Weapon : MonoBehaviour
     public Vector3 spawnScale = Vector3.one;
 
 
+    public GameObject muzzleFlashEffect; 
 
 
 
@@ -104,6 +105,16 @@ public class Weapon : MonoBehaviour
     private void FireWeapon()
     {
         readyToShoot = false;
+
+        if (muzzleFlashEffect != null)
+        {
+            ParticleSystem muzzleFlash = muzzleFlashEffect.GetComponent<ParticleSystem>();
+
+            if (muzzleFlash != null)
+            {
+                muzzleFlash.Play();
+            }
+        }
 
         Vector3 shootingDirection = CalculateDirectionAndSpread().normalized;
 

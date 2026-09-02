@@ -3189,7 +3189,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -6618,7 +6618,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -8769,7 +8769,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -20437,7 +20437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1302361475
 Transform:
   m_ObjectHideFlags: 0
@@ -20970,7 +20970,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -25836,7 +25836,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -30942,6 +30942,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1683456273784073315, guid: d4f991d5ddf3a3840b0dd3b07290caa4, type: 3}
+      propertyPath: lengthInSec
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 2311095990174093191, guid: d4f991d5ddf3a3840b0dd3b07290caa4, type: 3}
       propertyPath: m_Name
       value: AK74_1
@@ -32523,6 +32527,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: M4_8
       objectReference: {fileID: 0}
+    - target: {fileID: 2918998094439091243, guid: 323f561b50400414fa9150f4377e626e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4365727010358589284, guid: 323f561b50400414fa9150f4377e626e, type: 3}
+      propertyPath: muzzleFlashEffect
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5603930069706832951, guid: 323f561b50400414fa9150f4377e626e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.44999695
@@ -32626,6 +32638,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: M1911
       objectReference: {fileID: 0}
+    - target: {fileID: 1068316744358001948, guid: 80b219c01114cdb43bc8afe5d689f4b4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7335712911241685455, guid: 80b219c01114cdb43bc8afe5d689f4b4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.44999695
@@ -32665,6 +32681,10 @@ PrefabInstance:
     - target: {fileID: 7335712911241685455, guid: 80b219c01114cdb43bc8afe5d689f4b4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9182031328753476276, guid: 80b219c01114cdb43bc8afe5d689f4b4, type: 3}
+      propertyPath: muzzleFlashEffect
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -32804,7 +32824,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -32915,6 +32935,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bennelli_M4
       objectReference: {fileID: 0}
+    - target: {fileID: 2830604507167485454, guid: 210c71e5554982e43b23738abf018f2e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4404021006866632495, guid: 210c71e5554982e43b23738abf018f2e, type: 3}
+      propertyPath: muzzleFlashEffect
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32931,6 +32959,14 @@ PrefabInstance:
     - target: {fileID: 2311095990174093191, guid: d4f991d5ddf3a3840b0dd3b07290caa4, type: 3}
       propertyPath: m_Name
       value: AK74
+      objectReference: {fileID: 0}
+    - target: {fileID: 2311095990174093191, guid: d4f991d5ddf3a3840b0dd3b07290caa4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3212449229756803793, guid: d4f991d5ddf3a3840b0dd3b07290caa4, type: 3}
+      propertyPath: muzzleFlashEffect
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5198858497818342269, guid: d4f991d5ddf3a3840b0dd3b07290caa4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -32985,9 +33021,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 566018150}
     m_Modifications:
+    - target: {fileID: 7245248027975797299, guid: 0695e614153b3544dbac93929b2d544e, type: 3}
+      propertyPath: muzzleFlashEffect
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7970110457069538669, guid: 0695e614153b3544dbac93929b2d544e, type: 3}
       propertyPath: m_Name
       value: Uzi
+      objectReference: {fileID: 0}
+    - target: {fileID: 7970110457069538669, guid: 0695e614153b3544dbac93929b2d544e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8128671239451190879, guid: 0695e614153b3544dbac93929b2d544e, type: 3}
       propertyPath: m_LocalPosition.x
