@@ -7,6 +7,8 @@ public class Weapon : MonoBehaviour
     [Header("Camera Reference")]
     public Camera playerCamera;
 
+    public bool isActiveWeapon;
+
     [Header("Shooting State")]
     public bool isShooting;
     public bool readyToShoot;
@@ -27,6 +29,18 @@ public class Weapon : MonoBehaviour
     public float bulletVelocity = 100f;
     public float bulletPrefabLifetime = 3f;
 
+    public enum WeaponModel
+    {
+        M416,
+        AK74,
+        Bennelli_M4,
+        UZI,
+        M1911
+
+    }
+    public WeaponModel thisWeaponModel;
+
+
     public enum ShootingMode
     {
         Single,
@@ -36,6 +50,15 @@ public class Weapon : MonoBehaviour
 
     [Header("Shooting Mode")]
     public ShootingMode currentShootingMode;
+
+    [Header("Weapon Setup")]
+    public Vector3 spawnPosition;
+    public Vector3 spawnRotation;
+    public Vector3 spawnScale = Vector3.one;
+
+
+
+
 
     private void Awake()
     {
@@ -53,23 +76,28 @@ public class Weapon : MonoBehaviour
         }
     }
 
+
+
     void Update()
     {
-        if (currentShootingMode == ShootingMode.Auto)
+        if (isActiveWeapon)
         {
-            // Holding Down Left Mouse Button
-            isShooting = Input.GetKey(KeyCode.Mouse0) || Input.GetMouseButton(0);
-        }
-        else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
-        {
-            // Clicking Left Mouse Button Once
-            isShooting = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetMouseButtonDown(0);
-        }
+            if (currentShootingMode == ShootingMode.Auto)
+            {
+                // Holding Down Left Mouse Button
+                isShooting = Input.GetKey(KeyCode.Mouse0) || Input.GetMouseButton(0);
+            }
+            else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
+            {
+                // Clicking Left Mouse Button Once
+                isShooting = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetMouseButtonDown(0);
+            }
 
-        if (readyToShoot && isShooting)
-        {
-            burstBulletsLeft = bulletsPerBurst;
-            FireWeapon();
+            if (readyToShoot && isShooting)
+            {
+                burstBulletsLeft = bulletsPerBurst;
+                FireWeapon();
+            }
         }
     }
 
