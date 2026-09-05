@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 3212449229756803793}
   - component: {fileID: 2493201667578144660}
   - component: {fileID: 9116751669222097887}
+  - component: {fileID: 2118534395870221989}
   m_Layer: 0
   m_Name: AK74
   m_TagString: Untagged
@@ -217,6 +218,11 @@ MonoBehaviour:
   spawnRotation: {x: 0, y: 180, z: 0}
   spawnScale: {x: 5, y: 5, z: 5}
   muzzleFlashEffect: {fileID: 3368110293159350454}
+  reloadTime: 4
+  magazineSize: 40
+  bulletsLeft: 0
+  totalAmmo: 100
+  isReloading: 0
 --- !u!65 &2493201667578144660
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -256,6 +262,28 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!95 &2118534395870221989
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2311095990174093191}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 00b6a153f866de04fbed6f12283b6f36, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3412760810663577851
 GameObject:
   m_ObjectHideFlags: 0

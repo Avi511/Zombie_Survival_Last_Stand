@@ -83,7 +83,7 @@ public class WeaponManager : MonoBehaviour
             outline.enabled = false;
         }
 
-        //weapon.animator.enabled = true;
+        weapon.animator.enabled = true;
     }
 
 
@@ -95,7 +95,7 @@ public class WeaponManager : MonoBehaviour
             var weaponToDrop = activeWeaponSlot.transform.GetChild(0).gameObject;
 
             weaponToDrop.GetComponent<Weapon>().isActiveWeapon = false;
-            //weaponToDrop.GetComponent<Weapon>().animator.enabled = false;
+            weaponToDrop.GetComponent<Weapon>().animator.enabled = false;
 
             weaponToDrop.transform.SetParent(pickedupWeapon.transform.parent);
             weaponToDrop.transform.localPosition = pickedupWeapon.transform.localPosition;
