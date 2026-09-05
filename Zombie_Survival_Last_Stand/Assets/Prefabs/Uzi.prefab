@@ -593,6 +593,7 @@ GameObject:
   - component: {fileID: 7245248027975797299}
   - component: {fileID: 4987864038271118091}
   - component: {fileID: 8491049341110027301}
+  - component: {fileID: 5597936462888763639}
   m_Layer: 0
   m_Name: Uzi
   m_TagString: Untagged
@@ -707,6 +708,11 @@ MonoBehaviour:
   spawnRotation: {x: 0, y: 180, z: 0}
   spawnScale: {x: 5, y: 5, z: 5}
   muzzleFlashEffect: {fileID: 3342525929028620332}
+  reloadTime: 3.5
+  magazineSize: 30
+  bulletsLeft: 0
+  totalAmmo: 80
+  isReloading: 0
 --- !u!65 &4987864038271118091
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -746,6 +752,28 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!95 &5597936462888763639
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7970110457069538669}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5d412230974001e4fb34f30448d3c819, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &108794457588058106
 PrefabInstance:
   m_ObjectHideFlags: 0

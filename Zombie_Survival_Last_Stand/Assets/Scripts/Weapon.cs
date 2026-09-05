@@ -68,6 +68,8 @@ public class Weapon : MonoBehaviour
 
     public bool isReloading;
 
+    internal Animator animator;
+
 
     private void Awake()
     {
@@ -85,13 +87,17 @@ public class Weapon : MonoBehaviour
         }
 
         bulletsLeft = magazineSize;
+
+        animator = GetComponent<Animator>();
     }
 
 
     void Update()
     {
+
         if (isActiveWeapon)
         {
+
             if (currentShootingMode == ShootingMode.Auto)
             {
                 // Holding Down Left Mouse Button
@@ -149,6 +155,11 @@ public class Weapon : MonoBehaviour
             {
                 muzzleFlash.Play();
             }
+        }
+
+        if (animator != null)
+        {
+            animator.SetTrigger("SHOOT");
         }
 
         Vector3 shootingDirection = CalculateDirectionAndSpread().normalized;
@@ -313,6 +324,11 @@ public class Weapon : MonoBehaviour
     private void Reload()
     {
         isReloading = true;
+
+        if (animator != null)
+        {
+            animator.SetTrigger("RELOAD");
+        }
 
         Invoke("ReloadCompleted", reloadTime);
 

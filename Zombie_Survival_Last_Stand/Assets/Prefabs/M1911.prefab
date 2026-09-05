@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 9182031328753476276}
   - component: {fileID: 2136117353873956037}
   - component: {fileID: 7842889059877319206}
+  - component: {fileID: 5866511411221388581}
   m_Layer: 0
   m_Name: M1911
   m_TagString: Untagged
@@ -128,6 +129,11 @@ MonoBehaviour:
   spawnRotation: {x: 0, y: 180, z: 0}
   spawnScale: {x: 5, y: 5, z: 5}
   muzzleFlashEffect: {fileID: 4044154687178024925}
+  reloadTime: 4
+  magazineSize: 7
+  bulletsLeft: 0
+  totalAmmo: 14
+  isReloading: 0
 --- !u!65 &2136117353873956037
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -167,6 +173,28 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!95 &5866511411221388581
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068316744358001948}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c2d242f8d11691a488073944533d163d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2374381441049787281
 GameObject:
   m_ObjectHideFlags: 0

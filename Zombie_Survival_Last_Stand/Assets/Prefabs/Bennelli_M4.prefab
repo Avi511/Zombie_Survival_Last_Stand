@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4404021006866632495}
   - component: {fileID: 2403778941813016682}
   - component: {fileID: 4051157666257749575}
+  - component: {fileID: 1148663728366742795}
   m_Layer: 0
   m_Name: Bennelli_M4
   m_TagString: Untagged
@@ -126,6 +127,11 @@ MonoBehaviour:
   spawnRotation: {x: 0, y: 180, z: 0}
   spawnScale: {x: 5, y: 5, z: 5}
   muzzleFlashEffect: {fileID: 4841184151751311292}
+  reloadTime: 4
+  magazineSize: 5
+  bulletsLeft: 0
+  totalAmmo: 10
+  isReloading: 0
 --- !u!65 &2403778941813016682
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -165,6 +171,28 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!95 &1148663728366742795
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2830604507167485454}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a3384f861368e8d4d812fb08a8b7da54, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3283710332746655102
 GameObject:
   m_ObjectHideFlags: 0
