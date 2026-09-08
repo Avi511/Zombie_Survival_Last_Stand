@@ -28,7 +28,7 @@ public class Zombie : MonoBehaviour
             if (navMeshAgent != null)
             {
                 navMeshAgent.isStopped = true;
-                navMeshAgent.enabled = false; // Prevents agent from snapping corpse
+                navMeshAgent.enabled = false; 
             }
 
             if (animator != null)
@@ -38,7 +38,7 @@ public class Zombie : MonoBehaviour
         }
         else
         {
-            // Only trigger damage if still alive
+            
             if (animator != null)
             {
                 animator.SetTrigger("DAMAGE");
@@ -46,12 +46,5 @@ public class Zombie : MonoBehaviour
         }
     }
 
-    public void Update()
-    {
-        if (isDead || navMeshAgent == null || animator == null) return;
-
-        // Matches 'Iswalking' from your Animator Parameters tab
-        bool moving = navMeshAgent.velocity.magnitude > 0.1f;
-        animator.SetBool("Iswalking", moving);
-    }   
+      
 }

@@ -13,7 +13,7 @@ public class AimDot : MonoBehaviour
 
     private void CreateAimDot()
     {
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = Object.FindAnyObjectByType<Canvas>();
 
         if (canvas == null)
         {
