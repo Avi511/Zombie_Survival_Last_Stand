@@ -4,11 +4,21 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    public int BulletDamage = 25;
+
     private void OnCollisionEnter(Collision objectWeHit)
     {
         // Don't collide with the player who fired
         if (objectWeHit.gameObject.CompareTag("Player"))
         {
+            return;
+        }
+
+        Zombie enemy = objectWeHit.collider.GetComponentInParent<Zombie>();
+        if (enemy != null)
+        {
+            enemy.TakeDamage(BulletDamage);
+            Destroy(gameObject);
             return;
         }
 
@@ -27,20 +37,20 @@ public class Bullet : MonoBehaviour
             }
 
             Destroy(gameObject);
+            return;
         }
+
         if (objectWeHit.gameObject.CompareTag("Wall"))
         {
             print("hit " + objectWeHit.gameObject.name + " !");
 
             CreateBulletImpactEffect(objectWeHit);
+            Destroy(gameObject);
+            return;
+        }
 
-            Destroy(gameObject);
-        }
-        else
-        {
-            // Destroy on any other solid collision
-            Destroy(gameObject);
-        }
+        // Destroy on any other solid collision
+        Destroy(gameObject);
     }
 
     void CreateBulletImpactEffect(Collision objectWeHit)
