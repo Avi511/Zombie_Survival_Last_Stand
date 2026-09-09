@@ -12,8 +12,18 @@ public class Zombie : MonoBehaviour
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
+
+        if (navMeshAgent == null)
+        {
+            navMeshAgent = GetComponentInChildren<NavMeshAgent>();
+        }
+
+        if (navMeshAgent == null)
+        {
+            Debug.LogWarning("Zombie has no NavMeshAgent on the root or children.");
+        }
     }
 
     public void TakeDamage(int damageAmount)
@@ -24,25 +34,86 @@ public class Zombie : MonoBehaviour
 
         if (HP <= 0)
         {
-            isDead = true;
-            if (navMeshAgent != null)
-            {
-                navMeshAgent.isStopped = true;
-                navMeshAgent.enabled = false; 
-            }
+            Die();
+            return;
+        }
 
-            if (animator != null)
-            {
-                animator.SetTrigger("DIE1");
-            }
+        if (animator != null)
+        {
+            animator.SetTrigger("DAMAGE");
+        }
+
+        PlayZombieSound(SoundManager.Instance != null ? SoundManager.Instance.zombieHurt : null);
+    }
+
+    private void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+
+        StopChaseSound();
+
+        PlayZombieSound(SoundManager.Instance != null ? SoundManager.Instance.zombieDeath : null);
+
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+            navMeshAgent.enabled = false;
+        }
+
+        if (animator != null)
+        {
+            animator.SetTrigger("DIE1");
+        }
+
+        Destroy(gameObject, 2.5f);
+    }
+
+    public void PlayAttackSound()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayZombieSound(SoundManager.Instance.zombieAttack);
+        }
+    }
+
+    public void PlayChaseSound()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.StartChaseSound();
+        }
+    }
+
+    public void StopChaseSound()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.StopChaseSound();
+        }
+    }
+
+    public void PlayWalkingSound()
+    {
+        if (SoundManager.Instance != null)
+        {
+            PlayZombieSound(SoundManager.Instance.zombieWalking);
+        }
+    }
+
+    private void PlayZombieSound(AudioClip clip)
+    {
+        if (clip == null) return;
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayZombieSound(clip);
         }
         else
         {
-            
-            if (animator != null)
-            {
-                animator.SetTrigger("DAMAGE");
-            }
+            AudioSource.PlayClipAtPoint(clip, transform.position);
         }
     }
 

@@ -23,6 +23,11 @@ public class ZombieIdleState : StateMachineBehaviour
         {
             player = playerObj.transform;
         }
+
+        if (animator == null)
+        {
+            return;
+        }
     }
 
     override public void OnStateUpdate(
