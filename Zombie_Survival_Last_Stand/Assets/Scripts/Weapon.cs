@@ -7,6 +7,14 @@ public class Weapon : MonoBehaviour
     [Header("Camera Reference")]
     public Camera playerCamera;
 
+    [Header("Weapon Damage")]
+    [SerializeField] private int weaponDamage = 25;
+    public int WeaponDamage
+    {
+        get => weaponDamage;
+        set => weaponDamage = value;
+    }
+
     public bool isActiveWeapon;
 
     [Header("Shooting State")]
@@ -166,6 +174,12 @@ public class Weapon : MonoBehaviour
 
         // Instantiate or create the bullet
         GameObject bullet = SpawnBullet(bulletSpawn.position, Quaternion.identity);
+
+        Bullet projectile = bullet.GetComponent<Bullet>();
+        if (projectile != null)
+        {
+            projectile.BulletDamage = WeaponDamage;
+        }
 
         // Point the bullet forward to face the shooting direction
         bullet.transform.forward = shootingDirection;
