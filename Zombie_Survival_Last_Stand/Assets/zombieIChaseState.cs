@@ -5,6 +5,8 @@ public class ZombieChaseState : StateMachineBehaviour
 {
     private NavMeshAgent agent;
     private Transform player;
+    private float footstepTimer;
+    private const float FootstepInterval = 0.5f;
 
     public float chaseSpeed = 6f;
     public float stopChasingDistance = 28f;
@@ -15,6 +17,7 @@ public class ZombieChaseState : StateMachineBehaviour
         AnimatorStateInfo stateInfo,
         int layerIndex)
     {
+        footstepTimer = 0f;
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 
         if (playerObj != null)
@@ -24,10 +27,35 @@ public class ZombieChaseState : StateMachineBehaviour
 
         agent = animator.GetComponent<NavMeshAgent>();
 
+        if (agent == null)
+        {
+            agent = animator.GetComponentInChildren<NavMeshAgent>();
+        }
+
+        if (agent == null)
+        {
+            agent = animator.GetComponentInParent<NavMeshAgent>();
+        }
+
+        if (agent != null && !agent.isOnNavMesh)
+        {
+            NavMeshHit agentHit;
+            if (NavMesh.SamplePosition(animator.transform.position, out agentHit, 5f, NavMesh.AllAreas))
+            {
+                agent.Warp(agentHit.position);
+            }
+        }
+
         if (agent != null && agent.isOnNavMesh)
         {
             agent.speed = chaseSpeed;
             agent.isStopped = false;
+        }
+
+        Zombie zombie = animator.GetComponentInParent<Zombie>();
+        if (zombie != null)
+        {
+            zombie.PlayChaseSound();
         }
 
         animator.SetBool("isAttacking", false);
@@ -42,7 +70,11 @@ public class ZombieChaseState : StateMachineBehaviour
             return;
 
         if (!agent.isOnNavMesh)
-            return;
+        {
+            NavMeshHit agentHit;
+            if (!NavMesh.SamplePosition(animator.transform.position, out agentHit, 5f, NavMesh.AllAreas) || !agent.Warp(agentHit.position))
+                return;
+        }
 
         float distanceFromPlayer =
             Vector3.Distance(player.position, animator.transform.position);
@@ -81,6 +113,24 @@ public class ZombieChaseState : StateMachineBehaviour
             NavMesh.AllAreas))
         {
             agent.SetDestination(hit.position);
+            PlayFootstepSound(animator);
+        }
+    }
+
+    private void PlayFootstepSound(Animator animator)
+    {
+        if (agent == null || agent.isStopped || agent.velocity.sqrMagnitude < 0.01f)
+            return;
+
+        footstepTimer += Time.deltaTime;
+        if (footstepTimer < FootstepInterval)
+            return;
+
+        footstepTimer = 0f;
+        Zombie zombie = animator.GetComponentInParent<Zombie>();
+        if (zombie != null)
+        {
+            zombie.PlayWalkingSound();
         }
     }
 
@@ -92,6 +142,12 @@ public class ZombieChaseState : StateMachineBehaviour
         if (agent != null && agent.isOnNavMesh)
         {
             agent.isStopped = false;
+        }
+
+        Zombie zombie = animator.GetComponentInParent<Zombie>();
+        if (zombie != null)
+        {
+            zombie.StopChaseSound();
         }
     }
 }

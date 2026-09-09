@@ -12,6 +12,8 @@ public class ZombiePatrollingState : StateMachineBehaviour
 
     private Transform player;
     private NavMeshAgent agent;
+    private float footstepTimer;
+    private const float FootstepInterval = 0.5f;
 
     private List<Transform> waypointsList =
         new List<Transform>();
@@ -22,6 +24,7 @@ public class ZombiePatrollingState : StateMachineBehaviour
         int layerIndex)
     {
         timer = 0f;
+        footstepTimer = 0f;
 
         GameObject playerObj =
             GameObject.FindGameObjectWithTag("Player");
@@ -32,6 +35,16 @@ public class ZombiePatrollingState : StateMachineBehaviour
         }
 
         agent = animator.GetComponent<NavMeshAgent>();
+
+        if (agent == null)
+        {
+            agent = animator.GetComponentInChildren<NavMeshAgent>();
+        }
+
+        if (agent == null)
+        {
+            agent = animator.GetComponentInParent<NavMeshAgent>();
+        }
 
         if (agent == null || !agent.isOnNavMesh)
             return;
@@ -44,7 +57,8 @@ public class ZombiePatrollingState : StateMachineBehaviour
 
         if (waypointsCluster == null)
         {
-            Debug.LogError("Waypoints object not found!");
+            animator.SetBool("isPatrolling", false);
+            animator.SetBool("isChasing", true);
             return;
         }
 
@@ -94,6 +108,8 @@ public class ZombiePatrollingState : StateMachineBehaviour
             MoveToRandomWaypoint();
         }
 
+        PlayFootstepSound(animator);
+
         // Finish patrol
         if (timer >= patrollingTime)
         {
@@ -124,5 +140,22 @@ public class ZombiePatrollingState : StateMachineBehaviour
             ];
 
         agent.SetDestination(waypoint.position);
+    }
+
+    private void PlayFootstepSound(Animator animator)
+    {
+        if (agent == null || agent.isStopped || agent.velocity.sqrMagnitude < 0.01f)
+            return;
+
+        footstepTimer += Time.deltaTime;
+        if (footstepTimer < FootstepInterval)
+            return;
+
+        footstepTimer = 0f;
+        Zombie zombie = animator.GetComponentInParent<Zombie>();
+        if (zombie != null)
+        {
+            zombie.PlayWalkingSound();
+        }
     }
 }

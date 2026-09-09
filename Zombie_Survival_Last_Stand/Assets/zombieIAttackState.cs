@@ -23,6 +23,23 @@ public class ZombieAttackState : StateMachineBehaviour
 
         agent = animator.GetComponent<NavMeshAgent>();
 
+        if (agent == null)
+        {
+            agent = animator.GetComponentInChildren<NavMeshAgent>();
+        }
+
+        if (agent == null)
+        {
+            agent = animator.GetComponentInParent<NavMeshAgent>();
+        }
+
+        Zombie zombie = animator.GetComponentInParent<Zombie>();
+        if (zombie != null)
+        {
+            zombie.StopChaseSound();
+            zombie.PlayAttackSound();
+        }
+
         if (agent != null && agent.isOnNavMesh)
         {
             agent.isStopped = true;
