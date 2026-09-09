@@ -1,49 +1,97 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class ZombieChaseState : StateMachineBehaviour
 {
-    NavMeshAgent agent;
-    Transform player;
+    private NavMeshAgent agent;
+    private Transform player;
 
     public float chaseSpeed = 6f;
-    public float stopChasingDistance = 21f;
+    public float stopChasingDistance = 28f;
     public float attackingDistance = 2.5f;
 
-    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    override public void OnStateEnter(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
     {
-        // --- Initialization --- //
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+
         agent = animator.GetComponent<NavMeshAgent>();
 
-        agent.speed = chaseSpeed;
-        agent.isStopped = false;
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.speed = chaseSpeed;
+            agent.isStopped = false;
+        }
+
+        animator.SetBool("isAttacking", false);
     }
 
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    override public void OnStateUpdate(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
+    {
+        if (agent == null || player == null)
+            return;
+
+        if (!agent.isOnNavMesh)
+            return;
+
+        float distanceFromPlayer =
+            Vector3.Distance(player.position, animator.transform.position);
+
+        // Stop chasing if player is too far
+        if (distanceFromPlayer > stopChasingDistance)
+        {
+            animator.SetBool("isChasing", false);
+            return;
+        }
+
+        // Start attacking when close enough
+        if (distanceFromPlayer <= attackingDistance)
 {
-    agent.SetDestination(player.position);
+    Debug.Log("ZOMBIE SHOULD ATTACK! Distance = " + distanceFromPlayer);
 
-    // Diagnostic readouts
-    Debug.Log($"[NavCheck] Stopped: {agent.isStopped} | Speed: {agent.speed} | Path: {agent.pathStatus} | RemainingDist: {agent.remainingDistance}");
+    agent.isStopped = true;
+    agent.ResetPath();
 
-    float distanceFromPlayer = Vector3.Distance(player.position, animator.transform.position);
+    animator.SetBool("isAttacking", true);
 
-    if (distanceFromPlayer <= attackingDistance)
-    {
-        animator.SetBool("isAttacking", true);
-    }
-
-    if (distanceFromPlayer > stopChasingDistance)
-    {
-        animator.SetBool("isChasing", false);
-    }
+    return;
 }
 
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        // Continue chasing
+        animator.SetBool("isAttacking", false);
+
+        agent.isStopped = false;
+
+        NavMeshHit hit;
+
+        if (NavMesh.SamplePosition(
+            player.position,
+            out hit,
+            3f,
+            NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+    }
+
+    override public void OnStateExit(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
     {
-        agent.SetDestination(animator.transform.position);
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
     }
 }

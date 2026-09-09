@@ -1,40 +1,76 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class ZombieAttackState : StateMachineBehaviour
 {
-    NavMeshAgent agent;
-    Transform player;
+    private NavMeshAgent agent;
+    private Transform player;
 
-    public float stopAttackingDistance = 2.5f;
+    public float stopAttackingDistance = 3.0f;
 
-    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    override public void OnStateEnter(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        agent = animator.GetComponent<NavMeshAgent>();
-    }
+        GameObject playerObj =
+            GameObject.FindGameObjectWithTag("Player");
 
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        LookAtPlayer();
-
-        // --- Checking if the agent should stop Attacking --- //
-        float distanceFromPlayer = Vector3.Distance(player.position, animator.transform.position);
-
-        if (distanceFromPlayer > stopAttackingDistance)
+        if (playerObj != null)
         {
-            animator.SetBool("isAttacking", false);
+            player = playerObj.transform;
+        }
+
+        agent = animator.GetComponent<NavMeshAgent>();
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
         }
     }
 
-    private void LookAtPlayer()
+    override public void OnStateUpdate(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
     {
-        Vector3 direction = player.position - agent.transform.position;
-        agent.transform.rotation = Quaternion.LookRotation(direction);
+        if (player == null)
+            return;
 
-        var yRotation = agent.transform.eulerAngles.y;
-        agent.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        float distanceFromPlayer =
+            Vector3.Distance(
+                player.position,
+                animator.transform.position);
+
+        // Look at player
+        Vector3 direction =
+            player.position - animator.transform.position;
+
+        direction.y = 0f;
+
+        if (direction != Vector3.zero)
+        {
+            animator.transform.rotation =
+                Quaternion.LookRotation(direction);
+        }
+
+        // Stop attacking if player moves away
+        if (distanceFromPlayer > stopAttackingDistance)
+        {
+            animator.SetBool("isAttacking", false);
+            animator.SetBool("isChasing", true);
+        }
+    }
+
+    override public void OnStateExit(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
+    {
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
     }
 }

@@ -1,69 +1,128 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class ZombiePatrollingState : StateMachineBehaviour
 {
-    float timer;
+    private float timer;
+
     public float patrollingTime = 10f;
-
-    Transform player;
-    NavMeshAgent agent;
-
     public float detectionArea = 18f;
     public float patrolSpeed = 2f;
 
-    List<Transform> waypointsList = new List<Transform>();
+    private Transform player;
+    private NavMeshAgent agent;
 
-    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    private List<Transform> waypointsList =
+        new List<Transform>();
+
+    override public void OnStateEnter(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
     {
-        // --- Initialization --- //
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        timer = 0f;
+
+        GameObject playerObj =
+            GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+
         agent = animator.GetComponent<NavMeshAgent>();
 
-        agent.speed = patrolSpeed;
-        timer = 0;
+        if (agent == null || !agent.isOnNavMesh)
+            return;
 
-        // --- Get all waypoints --- //
-        GameObject waypointsCluster = GameObject.FindGameObjectWithTag("Waypoints");
+        agent.speed = patrolSpeed;
+        agent.isStopped = false;
+
+        GameObject waypointsCluster =
+            GameObject.FindGameObjectWithTag("Waypoints");
+
+        if (waypointsCluster == null)
+        {
+            Debug.LogError("Waypoints object not found!");
+            return;
+        }
+
         waypointsList.Clear();
+
         foreach (Transform t in waypointsCluster.transform)
         {
             waypointsList.Add(t);
         }
 
-        // Move to first random waypoint
-        Vector3 nextPosition = waypointsList[Random.Range(0, waypointsList.Count)].position;
-        agent.SetDestination(nextPosition);
-    }
-
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        // If agent arrived close to waypoint, pick another one
-        if (agent.remainingDistance <= agent.stoppingDistance)
+        if (waypointsList.Count == 0)
         {
-            agent.SetDestination(waypointsList[Random.Range(0, waypointsList.Count)].position);
+            Debug.LogError("No waypoints found!");
+            return;
         }
 
-        // --- Transition to Idle State --- //
+        MoveToRandomWaypoint();
+    }
+
+    override public void OnStateUpdate(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
+    {
+        if (agent == null || player == null)
+            return;
+
         timer += Time.deltaTime;
-        if (timer > patrollingTime)
+
+        // Check player distance
+        float distanceFromPlayer =
+            Vector3.Distance(
+                player.position,
+                animator.transform.position);
+
+        if (distanceFromPlayer < detectionArea)
+        {
+            animator.SetBool("isPatrolling", false);
+            animator.SetBool("isChasing", true);
+            return;
+        }
+
+        // Pick another waypoint
+        if (!agent.pathPending &&
+            agent.remainingDistance <= agent.stoppingDistance)
+        {
+            MoveToRandomWaypoint();
+        }
+
+        // Finish patrol
+        if (timer >= patrollingTime)
         {
             animator.SetBool("isPatrolling", false);
         }
+    }
 
-        // --- Transition to Chase State --- //
-        float distanceFromPlayer = Vector3.Distance(player.position, animator.transform.position);
-        if (distanceFromPlayer < detectionArea)
+    override public void OnStateExit(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
+    {
+        if (agent != null && agent.isOnNavMesh)
         {
-            animator.SetBool("isChasing", true);
+            agent.isStopped = true;
+            agent.ResetPath();
         }
     }
 
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    private void MoveToRandomWaypoint()
     {
-        // Stop the agent when exiting patrol
-        agent.SetDestination(agent.transform.position);
+        if (waypointsList.Count == 0)
+            return;
+
+        Transform waypoint =
+            waypointsList[
+                Random.Range(0, waypointsList.Count)
+            ];
+
+        agent.SetDestination(waypoint.position);
     }
 }

@@ -15,6 +15,9 @@ TagManager:
   - Wall
   - FxTemporaire
   - Zombie
+  - WaypointsClusters
+  - WaypointCluster
+  - Waypoints
   layers:
   - Default
   - TransparentFX

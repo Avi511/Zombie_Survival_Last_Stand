@@ -46,5 +46,15 @@ public class Zombie : MonoBehaviour
         }
     }
 
+    public void OnDrawGizmos(){
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, 28f);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, 18f);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, 2.5f);
+    }
+
       
 }

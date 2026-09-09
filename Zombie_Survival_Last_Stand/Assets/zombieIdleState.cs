@@ -1,35 +1,56 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ZombieIdleState : StateMachineBehaviour
 {
-    float timer;
-    public float idleTime = 0f;
+    private float timer;
 
-    Transform player;
+    public float idleTime = 0f;
     public float detectionAreaRadius = 18f;
 
-    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    private Transform player;
+
+    override public void OnStateEnter(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
     {
-        timer = 0;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        timer = 0f;
+
+        GameObject playerObj =
+            GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
     }
 
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    override public void OnStateUpdate(
+        Animator animator,
+        AnimatorStateInfo stateInfo,
+        int layerIndex)
     {
-        // --- Transition to Patrol State --- //
         timer += Time.deltaTime;
-        if (timer > idleTime)
+
+        // Idle -> Patrol
+        if (timer >= idleTime)
         {
             animator.SetBool("isPatrolling", true);
         }
 
-        // --- Transition to Chase State --- //
-        float distanceFromPlayer = Vector3.Distance(player.position, animator.transform.position);
-        if (distanceFromPlayer < detectionAreaRadius)
+        if (player == null)
+            return;
+
+        float distanceFromPlayer =
+            Vector3.Distance(
+                player.position,
+                animator.transform.position);
+
+        // Idle -> Chase
+        if (distanceFromPlayer <= detectionAreaRadius)
         {
             animator.SetBool("isChasing", true);
+            animator.SetBool("isPatrolling", false);
         }
     }
 }
