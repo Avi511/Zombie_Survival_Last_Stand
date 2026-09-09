@@ -110,6 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
   playerCamera: {fileID: 0}
+  weaponDamage: 50
   isActiveWeapon: 0
   isShooting: 0
   readyToShoot: 0
@@ -501,6 +502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca68c99a292389147b92078e384737bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
+  BulletDamage: 25
 --- !u!1001 &7840447212197439594
 PrefabInstance:
   m_ObjectHideFlags: 0

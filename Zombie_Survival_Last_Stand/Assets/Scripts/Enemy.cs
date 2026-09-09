@@ -9,11 +9,13 @@ public class Zombie : MonoBehaviour
     private Animator animator;
     private NavMeshAgent navMeshAgent;
     private bool isDead = false;
+    private CapsuleCollider capsuleCollider;
 
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
+        capsuleCollider = GetComponent<CapsuleCollider>();
 
         if (navMeshAgent == null)
         {
@@ -63,12 +65,18 @@ public class Zombie : MonoBehaviour
             navMeshAgent.enabled = false;
         }
 
+        if (capsuleCollider != null)
+        {
+            capsuleCollider.enabled = false;
+        }
+
         if (animator != null)
         {
             animator.SetTrigger("DIE1");
         }
 
-        Destroy(gameObject, 2.5f);
+        //Destroy(gameObject, 2.5f);
+        
     }
 
     public void PlayAttackSound()
