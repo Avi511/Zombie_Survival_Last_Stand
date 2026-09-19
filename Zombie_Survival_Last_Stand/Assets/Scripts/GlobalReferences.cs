@@ -1,21 +1,23 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class GlobalReferences : MonoBehaviour
+public class MainMenu : MonoBehaviour
 {
-    public static GlobalReferences Instance {get; set;}
+    public TMP_Text highScoreUI;
 
-    public GameObject bulletImpactEffectPrefab;
-    public GameObject bloodSprayEffectPrefab;
+    string newGameScene = "SampleScene";
 
-    private void Awake()
+    void Start()
     {
-        if(Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
+        // Set the high score text
+        int highScore = SaveLoadManager.Instance.LoadHighScore();
+
+        highScoreUI.text = $"Top Wave Survived: {highScore}";
+    }
+
+    public void StartNewGame()
+    {
+        SceneManager.LoadScene(newGameScene);
     }
 }

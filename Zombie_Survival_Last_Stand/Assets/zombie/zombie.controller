@@ -213,7 +213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::zombieIChaseState
   chaseSpeed: 6
-  stopChasingDistance: 251
+  stopChasingDistance: 101
   attackingDistance: 3.3
 --- !u!91 &9100000
 AnimatorController:
@@ -384,7 +384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::zombieIPatrollingState
   patrollingTime: 15
-  detectionArea: 250
+  detectionArea: 100
   patrolSpeed: 1.5
 --- !u!1102 &5968010500953207570
 AnimatorState:
@@ -453,7 +453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::zombieIdleState
   idleTime: 5
-  detectionAreaRadius: 20
+  detectionAreaRadius: 100
 --- !u!114 &6484921823125923790
 MonoBehaviour:
   m_ObjectHideFlags: 1
