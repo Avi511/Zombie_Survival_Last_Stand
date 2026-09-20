@@ -5,7 +5,8 @@ AssetOrigin:
   productId: 5669
   packageName: War FX
   packageVersion: 1.8.04
-  assetPath: Assets/JMO Assets/WarFX/Demo/UI Canvas/CFX Demo Btn SlowMo H.png
+  assetPath: Assets/Assets Packages/JMO Assets/WarFX/Demo/UI Canvas/CFX Demo Btn
+    SlowMo H.png
   uploadId: 301034
 TextureImporter:
   internalIDToNameTable: []
@@ -89,6 +90,19 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 1
   - serializedVersion: 4
     buildTarget: Standalone
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 4
+    buildTarget: Android
     maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
