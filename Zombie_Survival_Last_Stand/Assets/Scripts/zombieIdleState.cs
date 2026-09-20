@@ -2,60 +2,39 @@ using UnityEngine;
 
 public class ZombieIdleState : StateMachineBehaviour
 {
-    private float timer;
-
+    float timer;
     public float idleTime = 0f;
-    public float detectionAreaRadius = 18f;
 
-    private Transform player;
+    Transform player;
 
-    override public void OnStateEnter(
-        Animator animator,
-        AnimatorStateInfo stateInfo,
-        int layerIndex)
+    public float detectionAreaRadius = 20f;
+
+
+    //OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
+    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        timer = 0f;
+       timer = 0;
+       player = GameObject.FindGameObjectWithTag("Player").transform;
+    }
 
-        GameObject playerObj =
-            GameObject.FindGameObjectWithTag("Player");
 
-        if (playerObj != null)
+    // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
+    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        //Transition to Patroling State
+        timer = timer + Time.deltaTime;
+        if(timer > idleTime)
         {
-            player = playerObj.transform;
+            animator.SetBool("isPatroling",true);
         }
 
-        if (animator == null)
+        //Transition to Chase State
+        float distanceFromPlayer = Vector3.Distance(player.position,animator.transform.position);
+        if(distanceFromPlayer < detectionAreaRadius)
         {
-            return;
+            animator.SetBool("isChasing",true);
         }
     }
 
-    override public void OnStateUpdate(
-        Animator animator,
-        AnimatorStateInfo stateInfo,
-        int layerIndex)
-    {
-        timer += Time.deltaTime;
 
-        // Idle -> Patrol
-        if (timer >= idleTime)
-        {
-            animator.SetBool("isPatrolling", true);
-        }
-
-        if (player == null)
-            return;
-
-        float distanceFromPlayer =
-            Vector3.Distance(
-                player.position,
-                animator.transform.position);
-
-        // Idle -> Chase
-        if (distanceFromPlayer <= detectionAreaRadius)
-        {
-            animator.SetBool("isChasing", true);
-            animator.SetBool("isPatrolling", false);
-        }
-    }
 }

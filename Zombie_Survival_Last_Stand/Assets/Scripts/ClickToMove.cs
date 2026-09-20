@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,16 +14,17 @@ public class ClickToMove : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            
+            //Create a ray from camera to the mouse position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, NavMesh.AllAreas))
+            //Check if the ray hits the ground
+            if (Physics.Raycast(ray, out hit))
             {
-                
                 navAgent.SetDestination(hit.point);
             }
         }
+        
     }
+
 }

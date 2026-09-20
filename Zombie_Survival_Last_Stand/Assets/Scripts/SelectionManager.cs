@@ -6,8 +6,12 @@ public class SelectionManager : MonoBehaviour
 
     private Camera playerCamera;
 
-    public Weapon hoveredWeapon = null;   //variable stores a reference to the WeaponScript component
-    
+    public WeaponScript hoveredWeapon = null;   //variable stores a reference to the WeaponScript component
+    public AmmoBoxScript hoveredAmmoBox = null; 
+    public ThrowableScript hoveredThrowable = null;
+
+    private bool showItemInfo;  //Item panel
+
 
     private void Awake()
     {
@@ -30,6 +34,8 @@ public class SelectionManager : MonoBehaviour
 
     private void Update()
     {
+        showItemInfo = false;
+
         //Disable previous hovered object's outline before checking new object
         ClearHoveredObjects();
 
@@ -41,7 +47,7 @@ public class SelectionManager : MonoBehaviour
             GameObject objectHitByRaycast = hit.transform.gameObject;   //Get Hit Object (gun)
 
             //Check if the object contains WeaponScript
-            Weapon weapon = objectHitByRaycast.GetComponent<Weapon>();
+            WeaponScript weapon = objectHitByRaycast.GetComponent<WeaponScript>();
 
             if(weapon != null && weapon.isActiveWeapon == false) //Check Active Weapon. Suppose you're already holding the gun -> You don't want to outline it.
             {
@@ -54,17 +60,74 @@ public class SelectionManager : MonoBehaviour
                     outline.enabled = true;   //Enable weapon outline when looking at it
                 }
 
-                //Check if player is reloading before allowing weapon pickup
-                Weapon activeWeapon = WeaponManager.Instance.activeWeaponSlot.GetComponentInChildren<Weapon>();
+                HUDManager.Instance.ShowItemInfo(hoveredWeapon.weaponIcon,hoveredWeapon.weaponName,hoveredWeapon.weaponDescription); //For information panel
+                showItemInfo = true;
 
-                if(Input.GetKeyDown(KeyCode.Q))
+                //Check if player is reloading before allowing weapon pickup
+                WeaponScript activeWeapon = WeaponManager.Instance.activeWeaponSlot.GetComponentInChildren<WeaponScript>();
+
+                bool canPickup = activeWeapon == null || !activeWeapon.isReloading;
+
+                if(Input.GetKeyDown(KeyCode.Q) && canPickup)
                 {
                     WeaponManager.Instance.PickupWeapon(hoveredWeapon.gameObject);
                 }
             }
 
+
+            //Check if the object contains AmmoBoxScript
+            AmmoBoxScript ammoBox = objectHitByRaycast.GetComponent<AmmoBoxScript>();
+            if(ammoBox != null)
+            {
+                hoveredAmmoBox = ammoBox;  //Reference for AmmoBoxScript
+
+                Outline outline = hoveredAmmoBox.GetComponent<Outline>();
+
+                if(outline != null)
+                {
+                    outline.enabled = true;  //Enable ammo box outline
+                }
+
+                HUDManager.Instance.ShowItemInfo(hoveredAmmoBox.ammoIcon, hoveredAmmoBox.ammoName, hoveredAmmoBox.ammoDescription); //For information panel
+                showItemInfo = true;
+
+                if(Input.GetKeyDown(KeyCode.Q))
+                {
+                    WeaponManager.Instance.PickupAmmo(hoveredAmmoBox);
+
+                    Destroy(hoveredAmmoBox.gameObject, 1f);
+                }
+            }
+
+
+            //Check if the object contains ThrowableScript
+            ThrowableScript throwable = objectHitByRaycast.GetComponent<ThrowableScript>();
+            if(throwable != null)
+            {
+                hoveredThrowable = throwable;  
+
+                Outline outline = hoveredThrowable.GetComponent<Outline>();
+
+                if(outline != null)
+                {
+                    outline.enabled = true;  
+                }
+
+                HUDManager.Instance.ShowItemInfo(hoveredThrowable.throwablesIcon, hoveredThrowable.throwablesName, hoveredThrowable.throwablesDescription); //For information panel
+                showItemInfo = true;
+
+                if(Input.GetKeyDown(KeyCode.Q))
+                {
+                    WeaponManager.Instance.PickupThrowable(hoveredThrowable);
+                }
+            }
         }
-            
+
+
+        if(!showItemInfo)
+        {
+            HUDManager.Instance.HideItemInfo();
+        }
     }
 
 
@@ -83,5 +146,30 @@ public class SelectionManager : MonoBehaviour
             hoveredWeapon = null;
         }
 
+        //Remove previous ammo box outline
+        if(hoveredAmmoBox != null)
+        {
+            Outline outline = hoveredAmmoBox.GetComponent<Outline>();
+
+            if(outline != null)
+            {
+                outline.enabled = false;
+            }
+
+            hoveredAmmoBox = null;
+        }
+
+        //Remove previous throwables outline
+        if(hoveredThrowable != null)
+        {
+            Outline outline = hoveredThrowable.GetComponent<Outline>();
+
+            if(outline != null)
+            {
+                outline.enabled = false;
+            }
+
+            hoveredThrowable = null;
+        }
     }
 }

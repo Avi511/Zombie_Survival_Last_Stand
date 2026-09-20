@@ -17,8 +17,9 @@ public class PlayerScript : MonoBehaviour
 
     public void Start()
     {
-        playerHealthUI.text = $"Health : {HP}";
+        playerHealthUI.text = $"Health : {HP}"; 
     }
+
 
 
     public void TakeDamage(int damageAmount)
@@ -27,31 +28,24 @@ public class PlayerScript : MonoBehaviour
 
         Debug.Log("Player HP: " + HP);
 
-        if (HP <= 0)
+        if(HP <= 0)
         {
-            HP = 0;
-
-            playerHealthUI.text = $"Health : {HP}";
-
-            Debug.Log("Player Dead");
-
+            print("Player Dead");
             PlayerDead();
         }
         else
         {
-            Debug.Log("Player Hit");
-
+            print("Player Hit");
             if (bloodyScreenCoroutine != null)
             {
                 StopCoroutine(bloodyScreenCoroutine);
             }
 
             bloodyScreenCoroutine = StartCoroutine(BloodyScreenEffect());
-
-            playerHealthUI.text = $"Health : {HP}";
+            playerHealthUI.text = $"Health : {HP}"; 
+            AudioManager.Instance.playerChannel.PlayOneShot(AudioManager.Instance.playerHurt);
         }
     }
-
 
     private IEnumerator BloodyScreenEffect()
     {
@@ -60,63 +54,33 @@ public class PlayerScript : MonoBehaviour
             bloodyScreen.SetActive(true);
         }
 
-
         Image image = bloodyScreen.GetComponentInChildren<Image>();
 
-        if (image == null)
-        {
-            Debug.LogWarning("Bloody Screen Image component not found.");
-
-            bloodyScreenCoroutine = null;
-
-            yield break;
-        }
-
-
         Color color = image.color;
-
         color.a = 1f;
-
         image.color = color;
 
-
         float duration = 3f;
-
         float elapsedTime = 0f;
-
 
         while (elapsedTime < duration)
         {
-            float alpha = Mathf.Lerp(
-                1f,
-                0f,
-                elapsedTime / duration
-            );
-
+            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
 
             color = image.color;
-
             color.a = alpha;
-
             image.color = color;
 
-
             elapsedTime += Time.deltaTime;
-
 
             yield return null;
         }
 
-
         color = image.color;
-
         color.a = 0f;
-
         image.color = color;
 
-
         bloodyScreen.SetActive(false);
-
 
         bloodyScreenCoroutine = null;
     }
@@ -125,116 +89,50 @@ public class PlayerScript : MonoBehaviour
     private void PlayerDead()
     {
         isDead = true;
+        AudioManager.Instance.playerChannel.PlayOneShot(AudioManager.Instance.playerDie);
+        StartCoroutine(PlayGameOverSound());
 
 
-        // -----------------------------------------------------
-        // DISABLE MOUSE MOVEMENT
-        // -----------------------------------------------------
+        GetComponent<MouseMovement>().enabled = false;
+        GetComponent<PlayerMovement>().enabled = false;
 
-        MouseMovement mouseMovement = GetComponent<MouseMovement>();
+        GetComponentInChildren<Animator>().enabled = true;
 
-        if (mouseMovement != null)
-        {
-            mouseMovement.enabled = false;
-        }
+        playerHealthUI.gameObject.SetActive(false);
 
-
-        // -----------------------------------------------------
-        // DISABLE PLAYER MOVEMENT
-        //
-        // Your movement script is PlayerController,
-        // NOT PlayerMovement.
-        // -----------------------------------------------------
-
-        PlayerController playerController = GetComponent<PlayerController>();
-
-        if (playerController != null)
-        {
-            playerController.enabled = false;
-        }
-
-
-        // -----------------------------------------------------
-        // PLAYER DEATH ANIMATION
-        // -----------------------------------------------------
-
-        Animator animator = GetComponentInChildren<Animator>();
-
-        if (animator != null)
-        {
-            animator.enabled = true;
-        }
-
-
-        // -----------------------------------------------------
-        // HIDE HEALTH UI
-        // -----------------------------------------------------
-
-        if (playerHealthUI != null)
-        {
-            playerHealthUI.gameObject.SetActive(false);
-        }
-
-
-        // -----------------------------------------------------
-        // SCREEN FADER
-        //
-        // Commented temporarily because ScreenFader
-        // does not exist in the project yet.
-        // -----------------------------------------------------
-
-        // GetComponent<ScreenFader>().StartFade();
-
-
+        GetComponent<ScreenFader>().StartFade();
         StartCoroutine(showGameOverUI());
     }
 
+    private IEnumerator PlayGameOverSound()
+    {
+        yield return new WaitForSeconds(1f);
+
+        AudioManager.Instance.playerChannel.PlayOneShot(AudioManager.Instance.gameOver);
+    }
 
     private IEnumerator showGameOverUI()
     {
         yield return new WaitForSeconds(1f);
-
-
-        if (gameOverUI != null)
-        {
-            gameOverUI.gameObject.SetActive(true);
-        }
+        gameOverUI.gameObject.SetActive(true);
     }
 
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(
-            "TRIGGER ENTERED: " + other.gameObject.name
-        );
-
+        Debug.Log("TRIGGER ENTERED: " + other.gameObject.name);
 
         if (other.CompareTag("ZombieHand"))
         {
-            if (isDead == false)
+            if(isDead == false)
             {
-                // -------------------------------------------------
-                // ZombieHand script does not exist currently.
-                //
-                // Keep this here for later.
-                // -------------------------------------------------
-
-                /*
+                //Debug.Log("Zombie hand hit player!");
                 ZombieHand hand = other.GetComponent<ZombieHand>();
 
                 if (hand != null)
                 {
                     TakeDamage(hand.damage);
                 }
-                */
-
-
-                // TEMPORARY TEST:
-                // You can uncomment this if you want the player
-                // to take damage whenever something tagged
-                // "ZombieHand" touches the player.
-
-                // TakeDamage(10);
             }
         }
     }

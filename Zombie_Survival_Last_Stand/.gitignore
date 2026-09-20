@@ -17,3 +17,8 @@ UserSettings/
 *.svd
 .DS_Store
 .vscode/ 
+LightingData.asset
+**/LightingData.asset
+**/LightingData.asset
+**/LightingData.asset
+**/LightingData.asset

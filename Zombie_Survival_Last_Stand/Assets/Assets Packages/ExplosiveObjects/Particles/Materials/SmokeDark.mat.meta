@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 66a8005a57acaed479e0ece6b925660b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 255996
+  packageName: Exploding Objects
+  packageVersion: 1.1
+  assetPath: Assets/ExplosiveObjects/Particles/Materials/SmokeDark.mat
+  uploadId: 850390
