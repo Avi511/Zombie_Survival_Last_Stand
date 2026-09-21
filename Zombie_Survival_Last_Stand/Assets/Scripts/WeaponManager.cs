@@ -63,6 +63,9 @@ public class WeaponManager : MonoBehaviour
 
     public void Update()
     {
+
+
+        
         foreach(GameObject weaponSlot in weaponSlots)
         {
             if(weaponSlot == activeWeaponSlot)
@@ -92,7 +95,7 @@ public class WeaponManager : MonoBehaviour
 
 
         //Throwables Lethal
-        if(Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.R))
+        if(Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.T))
         {
             forceMultiplier = forceMultiplier + Time.deltaTime;
 
@@ -101,7 +104,7 @@ public class WeaponManager : MonoBehaviour
                 forceMultiplier = forceMultiplierLimit;
             }
         }
-        if(Input.GetKeyUp(KeyCode.E))
+        if(Input.GetKeyUp(KeyCode.Q))
         {
             if(lethalsCount > 0)
             {
@@ -111,7 +114,7 @@ public class WeaponManager : MonoBehaviour
         }
 
         //Throwables Tactical
-        if(Input.GetKeyUp(KeyCode.R))
+        if(Input.GetKeyUp(KeyCode.T))
         {
             if(tacticalsCount > 0)
             {

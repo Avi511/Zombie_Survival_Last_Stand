@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
+
 
 public class WeaponScript : MonoBehaviour
 {
@@ -113,6 +115,14 @@ public class WeaponScript : MonoBehaviour
 
     void Update()
     {
+
+        // If cursor is over UI, don't rotate the camera
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+
         if(isActiveWeapon)
         {
 
