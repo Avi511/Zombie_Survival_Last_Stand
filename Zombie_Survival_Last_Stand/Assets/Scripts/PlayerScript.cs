@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -115,6 +116,8 @@ public class PlayerScript : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         gameOverUI.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadScene(0);
     }
 
 
@@ -135,5 +138,16 @@ public class PlayerScript : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void GetMedKit(int value)
+    {
+        HP = HP + value;
+        if(HP > 100)
+        {
+            HP = 100;
+        }
+
+        playerHealthUI.text = $"Health : {HP}";
     }
 }

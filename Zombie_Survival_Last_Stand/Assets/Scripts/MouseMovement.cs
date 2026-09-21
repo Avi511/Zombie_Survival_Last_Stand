@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseMovement : MonoBehaviour
 {
@@ -16,6 +17,12 @@ public class MouseMovement : MonoBehaviour
 
     void Update()
     {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+
         //Getting Inputs from mouse and stores it in a variable
         float mouseX = Input.GetAxis("Mouse X")*mouseSensitivity*Time.deltaTime;    //Edit->Project Settings->Input Manager->Axes(Mouse X,Mouse Y, ...) 
         float mouseY = Input.GetAxis("Mouse Y")*mouseSensitivity*Time.deltaTime;

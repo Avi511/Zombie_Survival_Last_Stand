@@ -8,9 +8,13 @@ public class SelectionManager : MonoBehaviour
 
     public WeaponScript hoveredWeapon = null;   //variable stores a reference to the WeaponScript component
     public AmmoBoxScript hoveredAmmoBox = null; 
+    public MedBoxScript hoveredMedbox = null;
     public ThrowableScript hoveredThrowable = null;
 
+
     private bool showItemInfo;  //Item panel
+
+    public PlayerScript playerScript;
 
 
     private void Awake()
@@ -68,7 +72,7 @@ public class SelectionManager : MonoBehaviour
 
                 bool canPickup = activeWeapon == null || !activeWeapon.isReloading;
 
-                if(Input.GetKeyDown(KeyCode.Q) && canPickup)
+                if(Input.GetKeyDown(KeyCode.E) && canPickup)
                 {
                     WeaponManager.Instance.PickupWeapon(hoveredWeapon.gameObject);
                 }
@@ -91,7 +95,7 @@ public class SelectionManager : MonoBehaviour
                 HUDManager.Instance.ShowItemInfo(hoveredAmmoBox.ammoIcon, hoveredAmmoBox.ammoName, hoveredAmmoBox.ammoDescription); //For information panel
                 showItemInfo = true;
 
-                if(Input.GetKeyDown(KeyCode.Q))
+                if(Input.GetKeyDown(KeyCode.E))
                 {
                     WeaponManager.Instance.PickupAmmo(hoveredAmmoBox);
 
@@ -99,6 +103,28 @@ public class SelectionManager : MonoBehaviour
                 }
             }
 
+            MedBoxScript medbox = objectHitByRaycast.GetComponent<MedBoxScript>();
+            if(medbox != null)
+            {
+                hoveredMedbox = medbox;  
+
+                Outline outline = hoveredMedbox.GetComponent<Outline>();
+
+                if(outline != null)
+                {
+                    outline.enabled = true;  
+                }
+
+                //HUDManager.Instance.ShowItemInfo(hoveredThrowable.throwablesIcon, hoveredThrowable.throwablesName, hoveredThrowable.throwablesDescription); //For information panel
+                //showItemInfo = true;
+
+                if(Input.GetKeyDown(KeyCode.E))
+                {
+                    playerScript.GetMedKit(50);
+                    medbox.GetComponent<Animator>().enabled = true;
+                    Destroy(hoveredMedbox.gameObject, 1f);
+                }
+            }
 
             //Check if the object contains ThrowableScript
             ThrowableScript throwable = objectHitByRaycast.GetComponent<ThrowableScript>();
@@ -116,11 +142,12 @@ public class SelectionManager : MonoBehaviour
                 HUDManager.Instance.ShowItemInfo(hoveredThrowable.throwablesIcon, hoveredThrowable.throwablesName, hoveredThrowable.throwablesDescription); //For information panel
                 showItemInfo = true;
 
-                if(Input.GetKeyDown(KeyCode.Q))
+                if(Input.GetKeyDown(KeyCode.E))
                 {
                     WeaponManager.Instance.PickupThrowable(hoveredThrowable);
                 }
             }
+
         }
 
 
@@ -157,6 +184,18 @@ public class SelectionManager : MonoBehaviour
             }
 
             hoveredAmmoBox = null;
+        }
+
+        if(hoveredMedbox != null)
+        {
+            Outline outline = hoveredMedbox.GetComponent<Outline>();
+
+            if(outline != null)
+            {
+                outline.enabled = false;
+            }
+
+            hoveredMedbox = null;
         }
 
         //Remove previous throwables outline
