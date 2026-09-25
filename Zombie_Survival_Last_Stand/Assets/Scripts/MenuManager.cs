@@ -23,10 +23,25 @@ public class MenuManager : MonoBehaviour
         highScoreValue = PlayerPrefs.GetInt("HighScore", 0);
     }
 
+    public void Start()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            SetCursorForMenu();
+        }
+    }
+
+    private void SetCursorForMenu()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
     // Start the game
     public void StartGame()
     {
         SceneManager.LoadScene(1);
+
     }
 
     // Exit the game
